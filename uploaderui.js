@@ -1,7 +1,7 @@
 var kue = require('kue');
 kue.createQueue(
     {
-        prefix: 'catalogbatch8',
+        prefix: 'catalogbatch12',
         redis: {
             port: 6379,
             host: '127.0.0.1',
