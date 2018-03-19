@@ -68,7 +68,7 @@ let selectRandomBrand = function() {
     });
 };
 
-queue.process("brandmanagerqueue",2, async function(job, ctx, done) {
+queue.process("brandmanagerqueue", 2, async function(job, ctx, done) {
   job.log("----Processing brandmanagerqueue-----", job.data.brand.optId);
   let brand = job.data.brand;
 
@@ -83,21 +83,25 @@ queue.process("brandmanagerqueue",2, async function(job, ctx, done) {
     if (brand.hasOwnProperty("priority")) {
       priority = "high";
     }
-    async_lib.eachSeries(files,function(file,cb){
-      job.log(`Brand : ${brand.optId} File: ${file}`)
-      addBrandFileToQueue(brand, file, priority,cb);
-    },function(){
-      job.log('---All files added to queue -----')
-      console.log('--All files finished---')
-      done(null,brand)
-    })
+    async_lib.eachSeries(
+      files,
+      function(file, cb) {
+        job.log(`Brand : ${brand.optId} File: ${file}`);
+        addBrandFileToQueue(brand, file, priority, cb);
+      },
+      function() {
+        job.log("---All files added to queue -----");
+        console.log("--All files finished---");
+        done(null, brand);
+      }
+    );
   } catch (e) {
     console.log("e", e);
     done(e);
   }
 });
-let addBrandFileToQueue = function(brand, file, priority,cb) {
-  cb = cb || function(){}
+let addBrandFileToQueue = function(brand, file, priority, cb) {
+  cb = cb || function() {};
   console.log("----Calling addBrandFileToQueue");
   var job = queue
     .create("catalogbatchqueue", {
@@ -109,25 +113,36 @@ let addBrandFileToQueue = function(brand, file, priority,cb) {
     .priority(priority)
     .searchKeys(["optId"])
     .save(function(err) {
-      
-      if (!err){
+      if (!err) {
         //move File To Processing Dir
-        console.log('brand',brand.ftp)
-       let ftp = new FtpClient()
-        ftp.connect(brand.ftp)
+        console.log("brand", brand.ftp);
+        let ftp = new FtpClient();
+        ftp.connect(brand.ftp);
 
-        console.log('move file from '+brand.dir.upload + file.name+' to '+brand.dir.enqueued + file.name)
-        ftp.rename(brand.dir.upload + file.name,brand.dir.enqueued + file.name,function(err){
-          console.log('errft',err)
-          cb() 
-          ftp.end()
-        })
-        return ;
+        console.log(
+          "move file from " +
+            brand.dir.upload +
+            file.name +
+            " to " +
+            brand.dir.enqueued +
+            file.name
+        );
+        ftp.rename(
+          brand.dir.upload + file.name,
+          brand.dir.enqueued + file.name,
+          function(err) {
+            console.log("errft", err);
+            cb();
+            ftp.end();
+          }
+        );
+        return;
       }
-      cb()
+      cb();
       if (err) console.log("err", err);
     });
-  job.on("complete", function(id, result) {
+  job
+    .on("complete", function(id, result) {
       console.log("uploaderqueue Job completed with data ", result);
       kue.Job.get(id, function(err, job) {
         if (err) return;

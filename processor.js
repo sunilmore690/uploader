@@ -23,7 +23,7 @@ class Processor extends events {
     const brand = this.item.brand,
       file = this.item.file,
       that = this;
-
+    this.job.progress(10,100)
     this.ftpclient.rename(
       brand.dir.enqueued + file.name,
       brand.dir.processing + file.name,
@@ -47,6 +47,7 @@ class Processor extends events {
     // this.downloadFileFromFtp();
   }
   downloadFileFromFtp() {
+    this.job.progress(30,100)
     let that = this;
     this.job.log("--------downloadFileFromFtp-----------");
     this.job.log("--Downloading File From Ftp", this.pid);
@@ -71,13 +72,14 @@ class Processor extends events {
     );
   }
   seamless() {
+    this.job.progress(40,100)
     this.job.log("----- Seamless ------", this.pid);
     let that = this;
-    var i = 0;
+    var i = 40;
     var myVar = setInterval(function() {
       that.job.log("sending!" + i);
       i++;
-      that.job.progress(i, 300);
+      that.job.progress(i, 100);
     }, 1000);
     setTimeout(function() {
       clearInterval(myVar);
