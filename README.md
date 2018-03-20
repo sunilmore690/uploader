@@ -20,7 +20,7 @@ Uploader is used for process the catalog files for brand and upload the products
 
 ### Tech
 
-Dillinger uses a number of open source projects to work properly:
+uploader uses a number of open source projects to work properly:
 
 * [kue](https://www.npmjs.com/package/kue) - Kue is a priority job queue backed by redis, built for node.js.
 * [async](https://caolan.github.io/async/) - Async is a utility module which provides straight-forward, powerful functions for working with asynchronous JavaScript.
