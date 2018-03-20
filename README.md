@@ -28,9 +28,6 @@ uploader uses a number of open source projects to work properly:
 * [node.js] - evented I/O for the backend
 
 
-And of course Dillinger itself is open source with a [public repository][dill]
- on GitHub.
-
 ### Installation
 
 Uploader requires [Node.js](https://nodejs.org/) v7.9.0+ to run.
@@ -44,7 +41,7 @@ $ node index.js
 ```
 
 
-### Plugins
+### prerequisite
 
 Uploader required redis to be installed on Server
 
