@@ -1,0 +1,30 @@
+version: "2"
+services:
+  uploader2:
+    container_name: uploader_app2
+    restart: always
+    build: .
+    ports:
+      - "3000:3002"
+    links:
+      - mongo
+      - redis
+  mongo:
+    container_name: mongo
+    image: mongo
+    volumes:
+      - ./data:/data/db
+    ports:
+      - "27017:27017"
+  redis:
+    container_name: redis
+    image: redis:3.2-alpine
+    volumes:
+      - ./redis:/data/
+    ports:
+      - "6379:6379"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100MB"
+        max-file: "3"
