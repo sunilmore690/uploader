@@ -3,30 +3,24 @@ let CronJob = require("cron").CronJob,
   kue = require("kue"),
   async_lib = require("async"),
   FtpClient = require("ftp"),
+  queue = require('../initializers/queue')
   _ = require("lodash");
 
 let ftp = new FtpClient();
 
-let queue = kue.createQueue({
-  prefix: "catalogbatch12",
-  redis: {
-    port: 6379,
-    host: "127.0.0.1",
-    // auth: 'password',
-    db: 3 // if provided select a non-default redis db
-  }
-});
 
-var job = new CronJob({
-  cronTime: "*/5 * * * * *", //every 5 second
-  onTick: function() {
-    console.log("----- Manager Cron ------");
-    selectRandomBrand();
-  },
-  start: true,
-  timeZone: "America/Los_Angeles"
-});
-job.start();
+module.exports = function() {
+  var job = new CronJob({
+    cronTime: "*/5 * * * * *", //every 5 second
+    onTick: function() {
+      console.log("----- Manager Cron ------");
+      selectRandomBrand();
+    },
+    start: true,
+    timeZone: "America/Los_Angeles"
+  });
+  job.start();
+};
 
 let items = config.brands || [];
 let selectRandomBrand = function() {
@@ -68,7 +62,7 @@ let selectRandomBrand = function() {
     });
 };
 
-queue.process("brandmanagerqueue", 2, async function(job, ctx, done) {
+queue.process("brandmanagerqueue", async function(job, ctx, done) {
   job.log("----Processing brandmanagerqueue-----", job.data.brand.optId);
   let brand = job.data.brand;
 
