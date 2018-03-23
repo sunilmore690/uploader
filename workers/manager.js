@@ -24,7 +24,7 @@ module.exports = function() {
 
 let items = config.brands || [];
 let selectRandomBrand = function() {
-  var brand = items[0];
+  var brand = items[Math.floor(Math.random()*items.length)];
   console.log("brand", brand.optId);
   let priority = "normal";
   if (brand.priority) {

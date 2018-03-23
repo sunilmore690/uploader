@@ -38,12 +38,20 @@ module.exports = {
         password: "Laxman_usha90",
         pass: "Laxman_usha90"
       },
+      mapping:{
+        ['Style#']:'PRODUCT',
+        'Category Name':'Category',
+        ['Collection Name']:'Collections',
+        ['Image Name']:'ImagePath',
+        ['Wholesale Price']:'Price'
+      },
       dir: {
         upload: "/uploadrewrite/2/upload/",
         enqueued: "/uploadrewrite/2/enqueued/",
         processing: "/uploadrewrite/2/processing/",
         error: "/uploadrewrite/2/error/",
-        processed: "/uploadrewrite/2/processed/"
+        processed: "/uploadrewrite/2/processed/",
+        ignore: "/uploadrewrite/2/ignore/"
       }
     },
     {
@@ -57,12 +65,20 @@ module.exports = {
         password: "Laxman_usha90",
         pass: "Laxman_usha90"
       },
+      mapping:{
+        ['Style#']:'PRODUCT',
+        'Category Name':'Category',
+        ['Collection Name']:'Collections',
+        ['Image Name']:'ImagePath',
+        ['Wholesale Price']:'Price'
+      },
       dir: {
         upload: "/uploadrewrite/3/upload/",
         enqueued: "/uploadrewrite/3/enqueued/",
         processing: "/uploadrewrite/3/processing/",
         error: "/uploadrewrite/3/error/",
-        processed: "/uploadrewrite/3/processed/"
+        processed: "/uploadrewrite/3/processed/",
+        ignore: "/uploadrewrite/3/ignore/"
       }
     },
     {
@@ -76,12 +92,20 @@ module.exports = {
         password: "Laxman_usha90",
         pass: "Laxman_usha90"
       },
+      mapping:{
+        ['Style#']:'PRODUCT',
+        'Category Name':'Category',
+        ['Collection Name']:'Collections',
+        ['Image Name']:'ImagePath',
+        ['Wholesale Price']:'Price'
+      },
       dir: {
         upload: "/uploadrewrite/4/upload/",
         enqueued: "/uploadrewrite/4/enqueued/",
         processing: "/uploadrewrite/4/processing/",
         error: "/uploadrewrite/4/error/",
-        processed: "/uploadrewrite/4/processed/"
+        processed: "/uploadrewrite/4/processed/",
+        ignore: "/uploadrewrite/4/ignore/"
       }
     },
     {
@@ -95,31 +119,20 @@ module.exports = {
         password: "Laxman_usha90",
         pass: "Laxman_usha90"
       },
+      mapping:{
+        ['Style#']:'PRODUCT',
+        'Category Name':'Category',
+        ['Collection Name']:'Collections',
+        ['Image Name']:'ImagePath',
+        ['Wholesale Price']:'Price'
+      },
       dir: {
         upload: "/uploadrewrite/5/upload/",
         enqueued: "/uploadrewrite/5/enqueued/",
         processing: "/uploadrewrite/5/processing/",
         error: "/uploadrewrite/5/error/",
-        processed: "/uploadrewrite/5/processed/"
-      }
-    },
-    {
-      optId: "6",
-      name: "Brand6",
-      priority: "normal",
-      ftp: {
-        host: "ftp.filezapp.com",
-        port: 21,
-        user: "sunil@filezapp.com",
-        password: "Laxman_usha90",
-        pass: "Laxman_usha90"
-      },
-      dir: {
-        upload: "/uploadrewrite/6/upload/",
-        enqueued: "/uploadrewrite/6/enqueued/",
-        processing: "/uploadrewrite/6/processing/",
-        error: "/uploadrewrite/6/error/",
-        processed: "/uploadrewrite/6/processed/"
+        processed: "/uploadrewrite/5/processed/",
+        ignore: "/uploadrewrite/5/ignore/"
       }
     }
   ],

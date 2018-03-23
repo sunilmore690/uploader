@@ -106,7 +106,7 @@ class Uploader extends events {
     this.modifiedRemote = path.join(
       global.__dirname,
       "temp",
-      that.item.optId + "mod-" + that.item.file.name
+      that.item.optId + "mod-" + that.item.brand.optId+'-'+ that.item.file.name
     );
     console.log("prevfile", this.prevFile);
     if (!fs.existsSync(path.join(global.__dirname, "prev", that.item.optId))) {
