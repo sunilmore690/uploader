@@ -11,6 +11,13 @@ module.exports = {
         password: "Laxman_usha90",
         pass: "Laxman_usha90"
       },
+      mapping:{
+        ['Style#']:'PRODUCT',
+        'Category Name':'Category',
+        ['Collection Name']:'Collections',
+        imageName:'ImagePath',
+        ['Wholesale Price']:'Price'
+      },
       dir: {
         upload: "/uploadrewrite/1/upload/",
         enqueued: "/uploadrewrite/1/enqueued/",
@@ -115,6 +122,9 @@ module.exports = {
       }
     }
   ],
+  opt:{
+    endpoint:'http://sunilmore-rest-api.herokuapp.com/api/users'
+  },
   redis: {
     prefix: "catalogbatch",
     redis: {

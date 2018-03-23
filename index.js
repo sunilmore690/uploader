@@ -13,6 +13,9 @@ manager()
 var processor = require('./workers/processor')
 processor()
 
-let port = process.env.PORT || 3000;
+let port = process.env.PORT || 3030;
 kue.app.listen(port);
 console.log(`Queue Management Server running on ${port}`)
+process.on('unhandledRejection',function(err){
+    console.log(err)
+})
