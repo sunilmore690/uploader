@@ -5,7 +5,7 @@ let events = require("events"),
   path = require("path"),
   async_lib = require("async"),
   config = require("config"),
-  axios = require('axios')
+  axios = require("axios");
 class Uploader extends events {
   constructor(item, job) {
     super();
@@ -177,7 +177,7 @@ class Uploader extends events {
     that.job.log(`Reading ${that.modifiedRemote} `);
     //done uploader
     var productsData = this.mappedProducts || [];
-    console.log('productsdata',productsData)
+    console.log("productsdata", productsData);
     let url = config.opt.endpoint;
     console.log("url", url);
     async_lib.each(
@@ -194,13 +194,25 @@ class Uploader extends events {
           .catch(function(error) {
             let erroobj = { product: product["PRODUCT"], message: error };
             that.producterrors.push(erroobj);
-            cb()
+            cb();
           });
       },
       function(err) {
         that.job.log("All callign done");
-        fs.createReadStream(that.currentRemote).pipe(fs.createWriteStream(that.prevFile));
-        that.emit("done", { file: that.item.file });
+        fs
+          .createReadStream(that.currentRemote)
+          .pipe(fs.createWriteStream(that.prevFile));
+        common.moveFile(
+          that.item.brand.ftp,
+          that.item.brand.dir.processing + that.item.file.name,
+          that.item.brand.dir.processed + that.item.file.name,
+          function(err) {
+            if (err) {
+            }
+            that.emit("done", { file: that.item.file });
+          }
+        );
+        
       }
     );
   }

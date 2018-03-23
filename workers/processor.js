@@ -23,7 +23,7 @@ module.exports = function() {
     uploader.on("done", function(message) {
      job.progress(90,100)
       console.log("done", message);
-      moveFileToProcessedDir(message);
+      // moveFileToProcessedDir(message);
       done(null,item)
     });
   });

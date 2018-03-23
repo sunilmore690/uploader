@@ -23,7 +23,8 @@ module.exports = {
         enqueued: "/uploadrewrite/1/enqueued/",
         processing: "/uploadrewrite/1/processing/",
         error: "/uploadrewrite/1/error/",
-        processed: "/uploadrewrite/1/processed/"
+        processed: "/uploadrewrite/1/processed/",
+        ignore:"/uploadrewrite/1/ignore/",
       }
     },
     {
