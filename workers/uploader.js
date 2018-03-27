@@ -50,6 +50,9 @@ class Uploader extends events {
     // this.downloadFileFromFtp();
   }
   downloadFileFromFtp() {
+    if (!fs.existsSync( global.__dirname + "/temp/" )) {
+      fs.mkdirSync( global.__dirname + "/temp/" );
+    }
     this.job.log("------- downloadFileFromFtp ------- ");
     this.job.progress(30, 100);
     let that = this;
@@ -136,41 +139,48 @@ class Uploader extends events {
             }
           );
         } else {
-          that.uploader();
+          that.uploadSeamlessFile();
         }
       }.bind(this)
     );
   }
-  async uploader() {
+  uploadSeamlessFile() {
     var that = this;
-    this.job.log("-----applyBrandMapping----", this.pid);
-    // brand productsSpecification.xml
     let seamlessfile = this.currentRemote;
     if (fs.existsSync(this.modifiedRemote)) {
       seamlessfile = this.modifiedRemote;
     }
-    var productsData = [];
-    try {
-      productsData = await common.csvToJSON(seamlessfile);
-    } catch (e) {
-      return that.emit("error", e);
-    }
+    this.job.log('UPLOADING SEAMLESS FILE TO '+that.item.brand.dir.processing + that.item.file.name)
+    common.uploadFile(
+      that.item.brand.ftp,
+      seamlessfile,
+      that.item.brand.dir.processing + that.item.file.name
+    ,function(err){
+      if(err) return that.emit('error',{file:that.item.brand.dir.processing + that.item.file.name,message:'Error in uploading seamless file to '+that.item.brand.dir.processing + that.item.file.name})
+      that.uploader()
+    })
+  }
+  async uploader() {
+    var that = this;
+    this.job.log("Executing Catalog batch Script");
+    // brand productsSpecification.xml
+    
     var Client = require("ssh2").Client;
-    var productsCount = productsData.length;
+    
     var conn = new Client();
     conn
       .on("ready", function() {
         console.log("Client :: ready");
-        conn.exec("sh runnode.sh 10", function(err, stream) {
+        conn.exec(`sh runnode.sh 10 ftp://${that.item.brand.ftp.user}:${that.item.brand.ftp.password}@${that.item.brand.ftp.host}:${that.item.brand.ftp.port}${that.item.brand.dir.processing}${that.item.file.name}`, function(err, stream) {
           if (err) throw err;
           stream
             .on("close", function() {
               console.log("Stream :: close");
               conn.end();
-              that.done()
+              that.done();
             })
             .on("data", function(data) {
-                console.log('STDOUT: ' + data);
+              console.log("STDOUT: " + data);
               that.job.log(data + "");
             })
             .stderr.on("data", function(data) {
@@ -178,20 +188,31 @@ class Uploader extends events {
             });
         });
       })
-      .connect(_.extend(config.ssh,{privateKey:require("fs").readFileSync(config.ssh.privateKeyPath)}))
+      .connect(
+        _.extend(config.ssh, {
+          privateKey: require("fs").readFileSync(config.ssh.privateKeyPath)
+        })
+      );
   }
   done() {
-    this.job.log('Moving file fro processing to processed')
+    this.job.log("Moving file from processing to processed");
     var that = this;
+
+   
+    if(fs.existsSync(this.modifiedRemote)){
+      fs.unlinkSync(this.modifiedRemote)
+    }
     fs
       .createReadStream(that.currentRemote)
       .pipe(fs.createWriteStream(that.prevFile));
+      fs.unlinkSync(this.localFile);
     common.moveFile(
       that.item.brand.ftp,
       that.item.brand.dir.processing + that.item.file.name,
       that.item.brand.dir.processed + that.item.file.name,
       function(err) {
         if (err) {
+          // that.emit('error',)
         }
         that.emit("done", { file: that.item.file });
       }

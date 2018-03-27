@@ -7,17 +7,17 @@ module.exports = {
       ftp: {
         host: "ftp.filezapp.com",
         port: 21,
-        user: "sunil@filezapp.com",
-        password: "Laxman_usha90",
-        pass: "Laxman_usha90"
+        user: "mallinath@filezapp.com",
+        password: "malli123",
+        pass: "malli123"
       },
       dir: {
-        upload: "/uploadrewrite/1/upload/",
-        enqueued: "/uploadrewrite/1/enqueued/",
-        processing: "/uploadrewrite/1/processing/",
-        error: "/uploadrewrite/1/error/",
-        processed: "/uploadrewrite/1/processed/",
-        ignore:"/uploadrewrite/1/ignore/",
+        upload: "/upload/",
+        enqueued: "/enqueued/",
+        processing: "/processing/",
+        error: "/error/",
+        processed: "/processed/",
+        ignore:"/ignore/",
       }
     },
     {

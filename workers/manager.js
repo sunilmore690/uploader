@@ -22,8 +22,14 @@ module.exports = function() {
 };
 
 let items = config.brands || [];
+var length =items.length;
+var i = 0;
 let selectRandomBrand = function() {
-  var brand = items[Math.floor(Math.random() * items.length)];
+  if(items.length ==  i){
+    i = 0;
+  }
+  var brand = items[i];
+  i++;
   console.log("brand", brand.optId);
   let priority = "normal";
   if (brand.priority) {
