@@ -106,7 +106,11 @@ class Uploader extends events {
     this.modifiedRemote = path.join(
       global.__dirname,
       "temp",
-      that.item.optId + "mod-" + that.item.brand.optId+'-'+ that.item.file.name
+      that.item.optId +
+        "mod-" +
+        that.item.brand.optId +
+        "-" +
+        that.item.file.name
     );
     console.log("prevfile", this.prevFile);
     if (!fs.existsSync(path.join(global.__dirname, "prev", that.item.optId))) {
@@ -132,12 +136,12 @@ class Uploader extends events {
             }
           );
         } else {
-          that.applyBrandMapping();
+          that.uploader();
         }
       }.bind(this)
     );
   }
-  async applyBrandMapping() {
+  async uploader() {
     var that = this;
     this.job.log("-----applyBrandMapping----", this.pid);
     // brand productsSpecification.xml
@@ -151,68 +155,45 @@ class Uploader extends events {
     } catch (e) {
       return that.emit("error", e);
     }
-    this.mappedProducts = [];
-    var mapping = this.item.brand.mapping || {};
-    productsData = productsData.forEach(function(product) {
-      let mappedproduct = {};
-      for (var map in mapping) {
-        if (product[map]) mappedproduct[mapping[map]] = product[map];
-      }
-      if (!_.isEmpty(mappedproduct)) {
-        that.mappedProducts.push(mappedproduct);
-      } else {
-        that.producterrors.push({
-          product: product,
-          message: "Header Keys according to our mapping rule"
+    var Client = require("ssh2").Client;
+    var productsCount = productsData.length;
+    var conn = new Client();
+    conn
+      .on("ready", function() {
+        console.log("Client :: ready");
+        conn.exec("sh runnode.sh 10", function(err, stream) {
+          if (err) throw err;
+          stream
+            .on("close", function() {
+              console.log("Stream :: close");
+              conn.end();
+              that.done()
+            })
+            .on("data", function(data) {
+                console.log('STDOUT: ' + data);
+              that.job.log(data + "");
+            })
+            .stderr.on("data", function(data) {
+              console.log("STDERR: " + data);
+            });
         });
-      }
-    });
-    //apply mapping to seamless file
-
-    this.uploader();
+      })
+      .connect(_.extend(config.ssh,{privateKey:require("fs").readFileSync(config.ssh.privateKeyPath)}))
   }
-  uploader() {
+  done() {
+    this.job.log('Moving file fro processing to processed')
     var that = this;
-    this.job.log("---Calling uploader-----");
-    that.job.log(`Reading ${that.modifiedRemote} `);
-    //done uploader
-    var productsData = this.mappedProducts || [];
-    console.log("productsdata", productsData);
-    let url = config.opt.endpoint;
-    console.log("url", url);
-    async_lib.each(
-      productsData,
-      function(product, cb) {
-        console.log("url", url, product);
-        that.job.log("Calling ", url, product);
-        axios
-          .post(url, product)
-          .then(function(response) {
-            that.job.log(" Product added/modified ", product["PRODUCT"]);
-            cb();
-          })
-          .catch(function(error) {
-            let erroobj = { product: product["PRODUCT"], message: error };
-            that.producterrors.push(erroobj);
-            cb();
-          });
-      },
+    fs
+      .createReadStream(that.currentRemote)
+      .pipe(fs.createWriteStream(that.prevFile));
+    common.moveFile(
+      that.item.brand.ftp,
+      that.item.brand.dir.processing + that.item.file.name,
+      that.item.brand.dir.processed + that.item.file.name,
       function(err) {
-        that.job.log("All callign done");
-        fs
-          .createReadStream(that.currentRemote)
-          .pipe(fs.createWriteStream(that.prevFile));
-        common.moveFile(
-          that.item.brand.ftp,
-          that.item.brand.dir.processing + that.item.file.name,
-          that.item.brand.dir.processed + that.item.file.name,
-          function(err) {
-            if (err) {
-            }
-            that.emit("done", { file: that.item.file });
-          }
-        );
-        
+        if (err) {
+        }
+        that.emit("done", { file: that.item.file });
       }
     );
   }

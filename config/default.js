@@ -11,13 +11,6 @@ module.exports = {
         password: "Laxman_usha90",
         pass: "Laxman_usha90"
       },
-      mapping:{
-        ['Style#']:'PRODUCT',
-        'Category Name':'Category',
-        ['Collection Name']:'Collections',
-        imageName:'ImagePath',
-        ['Wholesale Price']:'Price'
-      },
       dir: {
         upload: "/uploadrewrite/1/upload/",
         enqueued: "/uploadrewrite/1/enqueued/",
@@ -37,13 +30,6 @@ module.exports = {
         user: "sunil@filezapp.com",
         password: "Laxman_usha90",
         pass: "Laxman_usha90"
-      },
-      mapping:{
-        ['Style#']:'PRODUCT',
-        'Category Name':'Category',
-        ['Collection Name']:'Collections',
-        ['Image Name']:'ImagePath',
-        ['Wholesale Price']:'Price'
       },
       dir: {
         upload: "/uploadrewrite/2/upload/",
@@ -65,13 +51,6 @@ module.exports = {
         password: "Laxman_usha90",
         pass: "Laxman_usha90"
       },
-      mapping:{
-        ['Style#']:'PRODUCT',
-        'Category Name':'Category',
-        ['Collection Name']:'Collections',
-        ['Image Name']:'ImagePath',
-        ['Wholesale Price']:'Price'
-      },
       dir: {
         upload: "/uploadrewrite/3/upload/",
         enqueued: "/uploadrewrite/3/enqueued/",
@@ -92,13 +71,6 @@ module.exports = {
         password: "Laxman_usha90",
         pass: "Laxman_usha90"
       },
-      mapping:{
-        ['Style#']:'PRODUCT',
-        'Category Name':'Category',
-        ['Collection Name']:'Collections',
-        ['Image Name']:'ImagePath',
-        ['Wholesale Price']:'Price'
-      },
       dir: {
         upload: "/uploadrewrite/4/upload/",
         enqueued: "/uploadrewrite/4/enqueued/",
@@ -118,13 +90,6 @@ module.exports = {
         user: "sunil@filezapp.com",
         password: "Laxman_usha90",
         pass: "Laxman_usha90"
-      },
-      mapping:{
-        ['Style#']:'PRODUCT',
-        'Category Name':'Category',
-        ['Collection Name']:'Collections',
-        ['Image Name']:'ImagePath',
-        ['Wholesale Price']:'Price'
       },
       dir: {
         upload: "/uploadrewrite/5/upload/",
@@ -147,5 +112,12 @@ module.exports = {
       // auth: 'password',
       db: 3 // if provided select a non-default redis db
     }
+  },
+  ssh:{
+    host: "ec2-54-186-176-189.us-west-2.compute.amazonaws.com",
+    port: 22,
+    username: "ec2-user",
+    privateKeyPath: "/Users/sunilmore/Downloads/sunilaws_private.pem"
+    
   }
 };
