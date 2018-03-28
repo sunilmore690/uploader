@@ -11,6 +11,7 @@ let seamless = async function(item, file, cb) {
 
     */
   let that = this;
+  var upload_type = this.upload_type;
   cb = cb || function() {};
   var currentRemote = this.localFile,
     pervFilePath = this.prevFile;
@@ -25,20 +26,22 @@ let seamless = async function(item, file, cb) {
     var currentFileData = await getJSON(currentRemote);
     var diffItems = [];
     let columnHeaders = currentFileData[0];
-    var modifiedStream = fs.createWriteStream(that.modifiedRemote, {    });
-    modifiedStream.write(columnHeaders + ",Processing\n");
+   
     currentFileData.shift();
     currentFileData.forEach(function(line, index) {
       if (prevFileData.indexOf(line) < 0) {
-        diffItems.push(line+',Yes');
-        modifiedStream.write(line + ",Yes\n");
-      }else{
-        modifiedStream.write(line + ",No\n");
+       diffItems.push(line+',Yes');  
+      }else if(upload_type == 'full'){
+        diffItems.push(line+',No');
       }
     });
-    modifiedStream.end();
-    console.log("diffitems", diffItems);
     if (diffItems.length) {
+      var modifiedStream = fs.createWriteStream(that.modifiedRemote, { });
+      modifiedStream.write(columnHeaders + ",Processing\n");
+      diffItems.forEach(function(item){
+        modifiedStream.write(item+'\n')
+      })
+      modifiedStream.end();
       return cb(true);
     } else {
       return cb(false);
@@ -131,9 +134,16 @@ let uploadFile = function(ftpobj,localFile,remotePath,cb) {
     cb(err);
   })
 };
+var getUploadType = function(name){
+  if(name.indexOf('full') > -1){
+     return 'full';
+  }
+  return 'partial'
+}
 module.exports = {
   seamless,
   csvToJSON,
   moveFile,
-  uploadFile
+  uploadFile,
+  getUploadType
 };

@@ -13,6 +13,7 @@ class Uploader extends events {
     this.item = item;
     this.job = job;
     this.isRunning = false;
+    this.upload_type = common.getUploadType(this.item.file.name)
     this.ftpclient = new FtpClient();
   }
   start() {

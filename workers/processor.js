@@ -7,14 +7,16 @@ let moveFileToProcessedDir = function(item) {
 let moveFileToErrorDir = function(item) {
   console.log("----Moving file from processing to error ---", item.file);
 };
+
 const sendErrorEmail = function(item, err) {
   console.log('Calling sendErrorEmail')
   var emailjob = queue
     .create("email", { item: item, err: err })
     // .priority(priority)
+    attemps(2)
     .save(function(err) {
-      if (!err) console.log("managerjobid", emailjob.id);
-      if (err) console.log("brand queueerr", err);
+      if (!err) console.log("emailjobid", emailjob.id);
+      if (err) console.log("email queueerr", err);
     });
     emailjob
     .on("complete", function(id, result) {
