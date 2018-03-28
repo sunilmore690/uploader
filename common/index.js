@@ -80,27 +80,12 @@ function getJSON(filePath, cb) {
     });
     var array = [];
     lineReader.on("line", function(line) {
-      // console.log('Line from file:', line);
       array.push(line);
     });
     lineReader.on("close", function() {
       console.log(array);
       resolve(array);
     });
-    // Do async job
-    // var array = [];
-    // csv({ noheader: true })
-    //   .fromFile(filePath)
-    //   .on("csv", csvRow => {
-    //     array.push(csvRow);
-    //   })
-    //   .on("done", error => {
-    //     if (error) {
-    //       reject(error);
-    //     } else {
-    //       resolve(array);
-    //     }
-    //   });
   });
 }
 let moveFile = function(ftpobj, src, dest, cb) {
