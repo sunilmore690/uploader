@@ -25,26 +25,20 @@ let seamless = async function(item, file, cb) {
     var currentFileData = await getJSON(currentRemote);
     var diffItems = [];
     let columnHeaders = currentFileData[0];
-    var modifiedStream = fs.createWriteStream(that.modifiedRemote, {
-      // flags: 'a' // 'a' means appending (old data will be preserved)
-    });
+    var modifiedStream = fs.createWriteStream(that.modifiedRemote, {    });
     modifiedStream.write(columnHeaders + ",Processing\n");
     currentFileData.shift();
     currentFileData.forEach(function(line, index) {
-      console.log("line", line);
-      // var findings = _.find(prevFileData, line);
       if (prevFileData.indexOf(line) < 0) {
         diffItems.push(line+',Yes');
         modifiedStream.write(line + ",Yes\n");
       }else{
-        // diffItems.push(line+',No');
         modifiedStream.write(line + ",No\n");
       }
     });
     modifiedStream.end();
     console.log("diffitems", diffItems);
     if (diffItems.length) {
-      // fs.writeFileSync(that.modifiedRemote, finalStr);
       return cb(true);
     } else {
       return cb(false);
@@ -117,6 +111,9 @@ let moveFile = function(ftpobj, src, dest, cb) {
     });
   });
   c.connect(ftpobj);
+  c.on('error',function(err){
+    cb(err);
+  })
 };
 let uploadFile = function(ftpobj,localFile,remotePath,cb) {
   cb = cb || function() {};
@@ -130,6 +127,9 @@ let uploadFile = function(ftpobj,localFile,remotePath,cb) {
   });
   // connect to localhost:21 as anonymous
   c.connect(ftpobj);
+  c.on('error',function(err){
+    cb(err);
+  })
 };
 module.exports = {
   seamless,

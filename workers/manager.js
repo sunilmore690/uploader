@@ -6,11 +6,11 @@ let CronJob = require("cron").CronJob,
   queue = require("../initializers/queue");
 _ = require("lodash");
 
-let ftp = new FtpClient();
+
 
 module.exports = function() {
   var job = new CronJob({
-    cronTime: "*/5 * * * * *", //every 5 second
+    cronTime: "*/20 * * * * *", //every 5 second
     onTick: function() {
       console.log("----- Manager Cron ------");
       selectRandomBrand();
@@ -67,7 +67,7 @@ let selectRandomBrand = function() {
     });
 };
 
-queue.process("brandmanagerqueue", async function(job, ctx, done) {
+queue.process("brandmanagerqueue", 4,async function(job, ctx, done) {
   job.log("----Processing brandmanagerqueue-----", job.data.brand.optId);
   let brand = job.data.brand;
 
@@ -183,7 +183,11 @@ let addBrandFileToQueue = function(job,brand, file, priority, cb) {
 let getFiles = function(brand) {
   // Return new promise
   return new Promise(function(resolve, reject) {
+    let ftp = new FtpClient();
     ftp.connect(brand.ftp);
+    ftp.on('error',function(err){
+      reject(err)
+    })
     ftp.list(brand.dir.upload, function(err, list) {
       if (err) reject(err);
       resolve(list);

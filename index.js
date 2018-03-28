@@ -13,6 +13,8 @@ manager()
 var processor = require('./workers/processor')
 processor()
 
+var email = require('./workers/email')
+email()
 let port = process.env.PORT || 3030;
 kue.app.listen(port);
 console.log(`Queue Management Server running on ${port}`)

@@ -16,9 +16,14 @@ class Uploader extends events {
     this.ftpclient = new FtpClient();
   }
   start() {
+    var that = this;
     this.job.log("--------Start-----------");
     this.ftpclient.connect(this.item.brand.ftp);
-    this.moveFileToProcessingDir();
+    this.ftpclient.on('error',function(err){
+      that.emit('error',err)
+    })
+    that.emit('error',{message:'Custom Error'})
+    // this.moveFileToProcessingDir();
   }
   moveFileToProcessingDir() {
     console.log(this.item);
@@ -65,6 +70,7 @@ class Uploader extends events {
       fs.mkdirSync(path.join(global.__dirname, "prev"));
     }
     this.job.log("brandTempdir", brandTempDir);
+    this.tempFile = brandTempDir + that.item.file.name
     this.job.log(
       "localfile",
       global.__dirname +
@@ -202,6 +208,9 @@ class Uploader extends events {
     if(fs.existsSync(this.modifiedRemote)){
       fs.unlinkSync(this.modifiedRemote)
     }
+    // if(fs.existsSync(this.tempFile)){
+    //   fs.unlinkSync(this.tempFile)
+    // }
     fs
       .createReadStream(that.currentRemote)
       .pipe(fs.createWriteStream(that.prevFile));

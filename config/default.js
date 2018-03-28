@@ -1,25 +1,45 @@
 module.exports = {
+
+  opt:{
+    endpoint:'http://sunilmore-rest-api.herokuapp.com'
+  },
+  redis: {
+    prefix: "catalogbatch",
+    redis: {
+      port: 6379,
+      host: "localhost",
+      // auth: 'password',
+      db: 3 // if provided select a non-default redis db
+    }
+  },
+  ssh:{
+    host: "ec2-54-186-176-189.us-west-2.compute.amazonaws.com",
+    port: 22,
+    username: "ec2-user",
+    privateKeyPath: "/Users/sunilmore/Downloads/sunilaws_private.pem"
+    
+  },
   brands: [
-    {
-      optId: "1",
-      name: "Brand1",
-      priority: "normal",
-      ftp: {
-        host: "ftp.filezapp.com",
-        port: 21,
-        user: "mallinath@filezapp.com",
-        password: "malli123",
-        pass: "malli123"
-      },
-      dir: {
-        upload: "/upload/",
-        enqueued: "/enqueued/",
-        processing: "/processing/",
-        error: "/error/",
-        processed: "/processed/",
-        ignore:"/ignore/",
-      }
-    },
+    // {
+    //   optId: "1",
+    //   name: "Brand1",
+    //   priority: "normal",
+    //   ftp: {
+    //     host: "ftp.filezapp.com",
+    //     port: 21,
+    //     user: "mallinath@filezapp.com",
+    //     password: "malli123",
+    //     pass: "malli123"
+    //   },
+    //   dir: {
+    //     upload: "/upload/",
+    //     enqueued: "/enqueued/",
+    //     processing: "/processing/",
+    //     error: "/error/",
+    //     processed: "/processed/",
+    //     ignore:"/ignore/",
+    //   }
+    // },
     {
       optId: "2",
       name: "Brand2",
@@ -45,7 +65,7 @@ module.exports = {
       name: "Brand3",
       priority: "normal",
       ftp: {
-        host: "ftp.filezapp.com",
+        host: "ftp.filezappcom",
         port: 21,
         user: "sunil@filezapp.com",
         password: "Laxman_usha90",
@@ -101,23 +121,5 @@ module.exports = {
       }
     }
   ],
-  opt:{
-    endpoint:'http://sunilmore-rest-api.herokuapp.com/api/users'
-  },
-  redis: {
-    prefix: "catalogbatch",
-    redis: {
-      port: 6379,
-      host: "localhost",
-      // auth: 'password',
-      db: 3 // if provided select a non-default redis db
-    }
-  },
-  ssh:{
-    host: "ec2-54-186-176-189.us-west-2.compute.amazonaws.com",
-    port: 22,
-    username: "ec2-user",
-    privateKeyPath: "/Users/sunilmore/Downloads/sunilaws_private.pem"
-    
-  }
+
 };
