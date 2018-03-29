@@ -8,16 +8,16 @@ module.exports = {
     redis: {
       port: 6379,
       host: "localhost",
-      // auth: 'password',
+
       db: 3 // if provided select a non-default redis db
     }
   },
+  shScript:"sh runnode.sh ",
   ssh:{
     host: "ec2-54-186-176-189.us-west-2.compute.amazonaws.com",
     port: 22,
     username: "ec2-user",
-    privateKeyPath: "/Users/sunilmore/Downloads/sunilaws_private.pem"
-    
+    privateKeyPath: "/Users/sunilmore/Downloads/sunilaws_private.pem" 
   },
   brands: [
     // {

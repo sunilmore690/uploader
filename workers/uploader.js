@@ -226,17 +226,15 @@ class Uploader extends events {
     this.job.log('LOCAL UPLOADER')
     var that = this;
     const { spawn } = require("child_process");
-    const sh = spawn("sh", ["/Users/sunilmore/Documents/projects/uploader/runnode.sh", "10",this.item.file.name]);
+    const sh = spawn(config.shScript,[this.item.brand.OptId,this.item.file.name]);
     sh.stdout.on("data", data => {
       console.log(`stdout: ${data}`);
       that.job.log(data + "");
     });
-
     sh.stderr.on("data", data => {
       console.log(`stderr: ${data}`);
       that.job.log(`stderr: ${data}`);
     });
-
     sh.on("close", code => {
       that.job.log('Shell script processing done'+code)
       that.done();
