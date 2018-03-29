@@ -26,7 +26,6 @@ let seamless = async function(item, file, cb) {
     var currentFileData = await getJSON(currentRemote);
     var diffItems = [];
     let columnHeaders = currentFileData[0];
-   
     currentFileData.shift();
     currentFileData.forEach(function(line, index) {
       if (prevFileData.indexOf(line) < 0) {
@@ -52,7 +51,6 @@ let seamless = async function(item, file, cb) {
   }
 };
 let csvToJSON = function(filePath, cb) {
-  console.log("csvToJSON", filePath);
   return new Promise(function(resolve, reject) {
     console.log("callling csvtojson");
     // Do async job

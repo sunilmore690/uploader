@@ -12,8 +12,7 @@ const sendErrorEmail = function(item, err) {
   console.log('Calling sendErrorEmail')
   var emailjob = queue
     .create("email", { item: item, err: err })
-    // .priority(priority)
-    attemps(2)
+    .attempts(2)
     .save(function(err) {
       if (!err) console.log("emailjobid", emailjob.id);
       if (err) console.log("email queueerr", err);

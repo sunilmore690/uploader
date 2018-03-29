@@ -151,7 +151,7 @@ let addBrandFileToQueue = function(job,brand, file, priority, cb) {
           });
           uploadjob
           .on("complete", function(id, result) {
-            console.log("uploaderqueue Job completed with data ", result);
+            console.log("uploaderqueue Job completed with data ", id);
             kue.Job.get(id, function(err, job) {
               if (err) return;
               job.remove(function(err) {
