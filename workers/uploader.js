@@ -106,11 +106,15 @@ class Uploader extends events {
     let that = this;
     var i = 40;
 
+    var getFileExt = that.item.file.name.split('.');
+        getFileExt = getFileExt[getFileExt.length-1];
+      
+
     this.prevFile = path.join(
       global.__dirname,
       "prev",
       that.item.optId,
-      "prevfile.csv"
+      "prevfile."+getFileExt
     );
     this.currentRemote = this.localFile;
     this.modifiedRemote = path.join(
@@ -191,7 +195,7 @@ class Uploader extends events {
       .on("ready", function() {
         console.log("Client :: ready");
         conn.exec(
-          `sh runnode.sh 10 ${that.item.file.name}`,
+          `sh /Users/sunilmore/Documents/projects/uploader/runnode.sh 10 ${that.item.file.name}`,
           function(err, stream) {
             if (err) throw err;
             stream
@@ -226,7 +230,7 @@ class Uploader extends events {
     this.job.log('LOCAL UPLOADER')
     var that = this;
     const { spawn } = require("child_process");
-    const sh = spawn(config.shScript,[this.item.brand.OptId,this.item.file.name]);
+    const sh = spawn('sh',['/Users/sunilmore/Documents/projects/uploader/runnode.sh',this.item.brand.OptId,this.item.file.name]);
     sh.stdout.on("data", data => {
       console.log(`stdout: ${data}`);
       that.job.log(data + "");

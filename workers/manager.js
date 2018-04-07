@@ -5,7 +5,8 @@ let CronJob = require("cron").CronJob,
   FtpClient = require("ftp"),
   queue = require("../initializers/queue");
 _ = require("lodash");
-
+var path = require('path')
+var supportedFormat = config.supportedFileFormat;
 
 
 module.exports = function() {
@@ -66,6 +67,10 @@ let selectRandomBrand = function() {
       );
     });
 };
+function isFileInSupportedFormat(name){
+  var ext = path.extname(name)
+  return supportedFormat.indexOf(ext) > -1;
+}
 
 queue.process("brandmanagerqueue", 4,async function(job, ctx, done) {
   job.log("----Processing brandmanagerqueue-----", job.data.brand.optId);
@@ -73,11 +78,30 @@ queue.process("brandmanagerqueue", 4,async function(job, ctx, done) {
 
   try {
     var files = await getFiles(brand);
+    // var files = []
+    // setTimeout(async function(){
+    //   files = await getFiles(brand)
+    // },1000)
+    console.log('Before files',files.length)
+    files = _.filter(files,function(file){
+       //to check is it file
+       if(file.type != '-') return false;
+
+       //check supported file format
+       var isFileFormatSupported = isFileInSupportedFormat(file.name)
+       if(!isFileFormatSupported) return false
+
+       //is file ready 
+      //  var isFileReady = _.find(old_files,{name:file.name,size:file.size});
+      //  return !!isFileReady
+      return true;
+
+    })
+    console.log('After files',files.length)
     files = _.sortBy(files, function(file) {
       return -file.date;
     });
-    files = _.filter(files, { type: "-" });
-    console.log("Files", files);
+    
     let priority = "normal";
     if (brand.hasOwnProperty("priority")) {
       priority = "high";
