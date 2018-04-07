@@ -60,7 +60,8 @@ module.exports = {
         processing: "/uploadrewrite/2/processing/",
         error: "/uploadrewrite/2/error/",
         processed: "/uploadrewrite/2/processed/",
-        ignore: "/uploadrewrite/2/ignore/"
+        ignore: "/uploadrewrite/2/ignore/",
+        backup:"/uploadrewrite/2/backup/"
       }
     }
   ]

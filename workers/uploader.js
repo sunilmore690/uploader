@@ -106,15 +106,14 @@ class Uploader extends events {
     let that = this;
     var i = 40;
 
-    var getFileExt = that.item.file.name.split('.');
-        getFileExt = getFileExt[getFileExt.length-1];
-      
+    var getFileExt = that.item.file.name.split(".");
+    getFileExt = getFileExt[getFileExt.length - 1];
 
     this.prevFile = path.join(
       global.__dirname,
       "prev",
       that.item.optId,
-      "prevfile."+getFileExt
+      "prevfile." + getFileExt
     );
     this.currentRemote = this.localFile;
     this.modifiedRemote = path.join(
@@ -195,19 +194,21 @@ class Uploader extends events {
       .on("ready", function() {
         console.log("Client :: ready");
         conn.exec(
-          `sh /Users/sunilmore/Documents/projects/uploader/runnode.sh 10 ${that.item.file.name}`,
+          `sh /Users/sunilmore/Documents/projects/uploader/runnode.sh 10 ${
+            that.item.file.name
+          }`,
           function(err, stream) {
             if (err) throw err;
             stream
               .on("close", function() {
                 console.log("Stream :: close");
                 conn.end();
-                that.emit('error',code);
+                that.emit("error", code);
               })
-              .on('disconnect',function(code){
+              .on("disconnect", function(code) {
                 console.log("Stream :: disconnect");
-                that.job.log(`Disconnect event`,code)
-                that.emit('error',code);
+                that.job.log(`Disconnect event`, code);
+                that.emit("error", code);
               })
               .on("data", function(data) {
                 console.log("STDOUT: " + data);
@@ -227,10 +228,14 @@ class Uploader extends events {
       );
   }
   async localUploader() {
-    this.job.log('LOCAL UPLOADER')
+    this.job.log("LOCAL UPLOADER");
     var that = this;
     const { spawn } = require("child_process");
-    const sh = spawn('sh',['/Users/sunilmore/Documents/projects/uploader/runnode.sh',this.item.brand.OptId,this.item.file.name]);
+    const sh = spawn("sh", [
+      "/Users/sunilmore/Documents/projects/uploader/runnode.sh",
+      this.item.brand.OptId,
+      this.item.file.name
+    ]);
     sh.stdout.on("data", data => {
       console.log(`stdout: ${data}`);
       that.job.log(data + "");
@@ -240,7 +245,7 @@ class Uploader extends events {
       that.job.log(`stderr: ${data}`);
     });
     sh.on("close", code => {
-      that.job.log('Shell script processing done'+code)
+      that.job.log("Shell script processing done" + code);
       that.done();
       console.log(`child process exited with code ${code}`);
     });
@@ -255,6 +260,7 @@ class Uploader extends events {
     fs
       .createReadStream(that.currentRemote)
       .pipe(fs.createWriteStream(that.prevFile));
+
     fs.unlinkSync(this.localFile);
     common.moveFile(
       that.item.brand.ftp,
@@ -264,6 +270,19 @@ class Uploader extends events {
         if (err) {
           // that.emit('error',)
         }
+        that.moveToBackup();
+      }
+    );
+  }
+  moveToBackup() {
+    var that = this;
+    this.job.log('MOVING FILE TO BACKUP DIR')
+    common.uploadFile(
+      that.item.brand.ftp,
+      this.currentRemote,
+      that.item.brand.dir.backup + that.item.file.name,
+      function(err) {
+        if (err) return that.emit("error", err);
         that.emit("done", { file: that.item.file });
       }
     );
