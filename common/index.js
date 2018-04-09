@@ -2,7 +2,8 @@ const fs = require("fs"),
   csv = require("csvtojson"),
   xlsxtojson = require("xlsx-to-json-lc"), //excel file
   xml2js = require("xml2js"), // xml file
-  jsonxml = require("jsontoxml");
+  jsonxml = require("jsontoxml"),
+  path = require('path');
 (_ = require("lodash")), (parser = new xml2js.Parser());
 
 FtpClient = require("ftp");
@@ -180,7 +181,7 @@ function getJSON(filePath, brand, cb) {
       xlsxtojson(
         {
           input: filePath,
-          sheet: "Sheet 1"
+          sheet: path.basename(filePath).split('.')[0] || 'Sheet 1'
         },
         function(err, result) {
           if (err) {
@@ -254,7 +255,8 @@ var createXlsx = (obj, file_name, callback) => {
   var headerArr = [];
   var headerBold = [];
   var char = 65; // for ascii value of A
-  var summary = workbook.addWorksheet("Sheet 1");
+  var sheet_name = path.basename(createXlsx).split('.')[0] || 'Sheet 1'
+  var summary = workbook.addWorksheet(sheet_name);
 
   headers.map(function(value) {
     console.log(value);
