@@ -232,7 +232,7 @@ class Uploader extends events {
     var that = this;
     const { spawn } = require("child_process");
     const sh = spawn("sh", [
-      "/Users/sunilmore/Documents/projects/uploader/runnode.sh",
+      config.shScript,
       this.item.brand.OptId,
       this.item.file.name
     ]);
@@ -276,7 +276,7 @@ class Uploader extends events {
   }
   moveToBackup() {
     var that = this;
-    this.job.log('MOVING FILE TO BACKUP DIR')
+    this.job.log("MOVING FILE TO BACKUP DIR");
     common.uploadFile(
       that.item.brand.ftp,
       this.currentRemote,

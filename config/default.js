@@ -12,7 +12,7 @@ module.exports = {
       db: 3 // if provided select a non-default redis db
     }
   },
-  shScript: "sh /Users/sunilmore/Documents/projects/uploader/runnode.sh ",
+  shScript: "/Users/sunilmore/Documents/projects/uploader/runnode.sh",
   ssh: {
     host: "ec2-54-186-176-189.us-west-2.compute.amazonaws.com",
     port: 22,

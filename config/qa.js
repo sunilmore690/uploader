@@ -1,7 +1,7 @@
 module.exports = {
 
     opt:{
-      endpoint:'http://sunilmore-rest-api.herokuapp.com'
+      endpoint:'http://optqa.optcentral.com'
     },
     redis: {
       prefix: "uploadrewrite",
@@ -19,7 +19,7 @@ module.exports = {
       privateKeyPath: "/Users/sunilmore/Downloads/sunilaws_private.pem"
       
     },
-    shScript:"sudo bash /home/opt/standalone/runXCD.sh",
+    shScript:"/home/opt/standalone/runXCD.sh",
     brands: [
       {
         optId: "3",
@@ -39,6 +39,7 @@ module.exports = {
           error: "/Kwiat_Catalog_Data_Feed/error/",
           processed: "/Kwiat_Catalog_Data_Feed/processed/",
           ignore:"/Kwiat_Catalog_Data_Feed/ignore/",
+          backup:"/Kwiat_Catalog_Data_Feed/backup/",
         }
       },
       
