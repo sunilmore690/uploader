@@ -346,10 +346,10 @@ let addBrandFileToQueue = function (brand, file, priority, delay, cb) {
 
   var job = queue
     .create("catalogbatchqueue", {
-      optId: brand.id,
+      optId: brand.optId,
       brand,
       file,
-      title: `Brand: ${brand.id}   File: ${file.name}`
+      title: `Brand: ${brand.optId}   File: ${file.name}`
     })
     .priority(priority)
     .delay(delay)
@@ -386,7 +386,9 @@ let addBrandFileToQueue = function (brand, file, priority, delay, cb) {
       );
     });
 
-};
+}
+
+
 module.exports = {
   addBrandFileToQueue,
   seamless,
