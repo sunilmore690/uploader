@@ -3,7 +3,8 @@ let CronJob = require("cron").CronJob,
   kue = require("kue"),
   async_lib = require("async"),
   FtpClient = require("ftp"),
-  queue = require("../initializers/queue");
+  queue = require("../initializers/queue"),
+  common = require('../common/index'),
 _ = require("lodash");
 var path = require('path')
 var supportedFormat = config.supportedFileFormat;
@@ -110,7 +111,8 @@ queue.process("brandmanagerqueue", 4,async function(job, ctx, done) {
       files,
       function(file, cb) {
         job.log(`Brand : ${brand.optId} File: ${file}`);
-        addBrandFileToQueue(job,brand, file, priority, cb);
+        common.addBrandFileToQueue(brand, file, priority,null,cb);
+        // addBrandFileToQueue(job,brand, file, priority, cb);
       },
       function() {
         job.log("---All files added to queue -----");

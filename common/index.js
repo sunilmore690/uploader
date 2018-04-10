@@ -5,7 +5,8 @@ const fs = require("fs"),
   jsonxml = require("jsontoxml"),
   path = require('path');
 (_ = require("lodash")), (parser = new xml2js.Parser());
-
+var kue = require("kue"),
+queue = require("../initializers/queue"),
 FtpClient = require("ftp");
 let seamless = async function(item, file, cb) {
   /*
@@ -314,7 +315,59 @@ var createXML = (obj, file_name, brand_xml,callback) => {
   });
 };
 
+let addBrandFileToQueue = function (brand, file, priority,delay, cb) {
+
+
+  if(delay==undefined || delay==null || delay==''){
+      delay=0;
+  }
+  console.log("----Calling addBrandFileToQueue");
+
+  var job = queue
+      .create("catalogbatchqueue", {
+          optId: brand.id,
+          brand,
+          file,
+          title: `Brand: ${brand.id}   File: ${file.name}`
+      })
+      .priority(priority)
+      .delay(delay)
+      .searchKeys(["optId"])
+      .save(function (err) {
+          if (!err) console.log("jobid", job.data.brand.name);
+          if (err) console.log("err", err);
+          });
+
+  job
+     .on("complete", function (id, result) {
+          console.log("uploaderqueue Job completed with data ", result);
+          kue.Job.get(id, function (err, job) {
+              if (err) return;
+              job.remove(function (err) {
+                  if (err) throw err;
+                  console.log("removed completed job #%d", job.id);
+              });
+          });
+      })
+      .on("failed attempt", function (errorMessage, doneAttempts) {
+          console.log("Job failed attempt");
+      })
+      .on("failed", function (errorMessage) {
+          console.log("line number 337");
+          console.log(errorMessage);
+          console.log("Job failed", errorMessage);
+
+      })
+      .on("progress", function (progress, data) {
+          console.log(
+              "\r  job #" + job.id + " " + progress + "% complete with data ",
+              data
+          );
+      });
+
+};
 module.exports = {
+  addBrandFileToQueue,
   seamless,
   csvToJSON,
   moveFile,
