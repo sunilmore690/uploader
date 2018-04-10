@@ -2,7 +2,7 @@ module.exports = {
   opt: {
     endpoint: "http://sunilmore-rest-api.herokuapp.com"
   },
-  supportedFileFormat:['.csv','.xlsx','.xml'],
+  supportedFileFormat:['.csv','.xlsx','.xml','.xls'],
   redis: {
     prefix: "catalogbatch",
     redis: {
