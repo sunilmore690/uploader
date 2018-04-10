@@ -74,9 +74,10 @@ function isFileInSupportedFormat(name){
 }
 
 queue.process("brandmanagerqueue", 4,async function(job, ctx, done) {
-  job.log("----Processing brandmanagerqueue-----", job.data.brand.optId);
+    job.log("----Processing brandmanagerqueue-----", job.data.brand.optId);
   let brand = job.data.brand;
-
+  console.log("++++++++");
+  console.log(brand);
   try {
     var files = await getFiles(brand);
     // var files = []
@@ -110,7 +111,7 @@ queue.process("brandmanagerqueue", 4,async function(job, ctx, done) {
     async_lib.eachSeries(
       files,
       function(file, cb) {
-        job.log(`Brand : ${brand.optId} File: ${file}`);
+        job.log(`Brand : ${brand} File: ${file}`);
         common.addBrandFileToQueue(brand, file, priority,null,cb);
         // addBrandFileToQueue(job,brand, file, priority, cb);
       },
@@ -125,86 +126,6 @@ queue.process("brandmanagerqueue", 4,async function(job, ctx, done) {
     done(e);
   }
 });
-let addBrandFileToQueue = function(job,brand, file, priority, cb) {
-  cb = cb || function() {};
-  var that = this;
-  job.log("----Calling addBrandFileToQueue");
-  async_lib.series(
-    {
-      moveFileToEnqueued: function(callback) {
-        job.log('--Moving file to enqueued')
-        let ftp = new FtpClient();
-        ftp.connect(brand.ftp);
-
-        job.log(
-          "move file from " +
-            brand.dir.upload +
-            file.name +
-            " to " +
-            brand.dir.enqueued +
-            file.name
-        );
-        ftp.rename(
-          brand.dir.upload + file.name,
-          brand.dir.enqueued + file.name,
-          function(err) {
-            if(err) job.log( err);        
-            callback();
-            ftp.end();
-          }
-        );
-      },
-      addtoqueue: function(callback) {
-        job.log('--Adding File to queue',file.name)
-        var uploadjob = queue
-          .create("catalogbatchqueue", {
-            optId: brand.optId + "",
-            brand,
-            file,
-            title: `Brand: ${brand.optId}   File: ${file.name}`
-          })
-          .priority(priority)
-          .searchKeys(["optId"])
-          .save(function(err) {
-            if (!err) {
-              //move File To Processing Dir
-              console.log("brand", brand.ftp);
-
-              // return;
-            }
-            callback();
-            if (err) console.log("err", err);
-          });
-          uploadjob
-          .on("complete", function(id, result) {
-            console.log("uploaderqueue Job completed with data ", id);
-            kue.Job.get(id, function(err, job) {
-              if (err) return;
-              job.remove(function(err) {
-                if (err) throw err;
-                console.log("removed completed job #%d", job.id);
-              });
-            });
-          })
-          .on("failed attempt", function(errorMessage, doneAttempts) {
-            console.log("Job failed attempt");
-          })
-          .on("failed", function(errorMessage) {
-            console.log("Job failed", errorMessage);
-          })
-          .on("progress", function(progress, data) {
-            console.log(
-              "\r  job #" + uploadjob.id + " " + progress + "% complete with data ",
-              data
-            );
-          });
-      }
-    },
-    function(err) {
-      cb()
-    }
-  );
-};
 
 let getFiles = function(brand) {
   // Return new promise
