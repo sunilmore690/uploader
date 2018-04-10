@@ -1,14 +1,15 @@
 const fs = require("fs"),
   csv = require("csvtojson"),
   xlsxtojson = require("xlsx-to-json-lc"), //excel file
+  xlstojson = require("xls-to-json-lc"), //excel file
   xml2js = require("xml2js"), // xml file
   jsonxml = require("jsontoxml"),
   path = require('path');
 (_ = require("lodash")), (parser = new xml2js.Parser());
 var kue = require("kue"),
-queue = require("../initializers/queue"),
-FtpClient = require("ftp");
-let seamless = async function(item, file, cb) {
+  queue = require("../initializers/queue"),
+  FtpClient = require("ftp");
+let seamless = async function (item, file, cb) {
   /*
        item = {
            brand,
@@ -19,7 +20,7 @@ let seamless = async function(item, file, cb) {
       */
   let that = this;
   var upload_type = this.upload_type;
-  cb = cb || function() {};
+  cb = cb || function () {};
   var currentRemote = this.localFile,
     prevFilePath = this.prevFile;
 
@@ -53,7 +54,7 @@ let seamless = async function(item, file, cb) {
       var diffItems = [];
       let columnHeaders = currentFileData[0];
       currentFileData.shift();
-      currentFileData.forEach(function(line, index) {
+      currentFileData.forEach(function (line, index) {
         if (prevFileData.indexOf(line) < 0) {
           diffItems.push(line + ",Yes");
         } else if (upload_type == "full") {
@@ -63,18 +64,18 @@ let seamless = async function(item, file, cb) {
       if (diffItems.length) {
         var modifiedStream = fs.createWriteStream(that.modifiedRemote, {});
         modifiedStream.write(columnHeaders + ",Processing\n");
-        diffItems.forEach(function(item) {
+        diffItems.forEach(function (item) {
           modifiedStream.write(item + "\n");
         });
         modifiedStream.end();
-        console.log("line number 60.....");
+      
         return cb(true);
       } else {
         return cb(false);
       }
-    } else if (getCurrentFileExt == "xlsx" || getPrevFileExt == "xlsx") {
+    } else if (getCurrentFileExt == "xlsx" || getPrevFileExt == "xlsx" || getCurrentFileExt == "xls" || getPrevFileExt == "xls") {
       let diffItems = [];
-      currentFileData.forEach(function(obj, index) {
+      currentFileData.forEach(function (obj, index) {
         var compareData = _.find(prevFileData, obj);
         // compareData is undefined means data is not present in previous file
         if (compareData == undefined) {
@@ -88,7 +89,7 @@ let seamless = async function(item, file, cb) {
 
       if (diffItems.length) {
         createXlsx(modifiedStream, that.modifiedRemote, (err) => {
-          if(err) {
+          if (err) {
             that.job.log(err)
             return cb(false)
           }
@@ -100,7 +101,7 @@ let seamless = async function(item, file, cb) {
     } else if (getCurrentFileExt == "xml" || getPrevFileExt == "xml") {
       console.log("In 101 line");
       let diffItems = [];
-      currentFileData.forEach(function(obj, index) {
+      currentFileData.forEach(function (obj, index) {
         var compareData = _.find(prevFileData, obj);
         console.log("compare data ", compareData);
         // compareData is undefined means data is not present in previous file
@@ -115,7 +116,7 @@ let seamless = async function(item, file, cb) {
       }); // each complete
 
       if (diffItems.length) {
-        createXML(diffItems, that.modifiedRemote,that.item.brand.xml, () => {
+        createXML(diffItems, that.modifiedRemote, that.item.brand.xml, () => {
           return cb(true);
         });
       } else {
@@ -130,6 +131,7 @@ let seamless = async function(item, file, cb) {
     return cb(false);
   }
 };
+
 function getter() {
   var v = this.result;
   for (var i = 0; i < arguments.length; i++) {
@@ -138,9 +140,9 @@ function getter() {
   }
   return v;
 }
-let csvToJSON = function(filePath, cb) {
+let csvToJSON = function (filePath, cb) {
   console.log("csvToJSON", filePath);
-  return new Promise(function(resolve, reject) {
+  return new Promise(function (resolve, reject) {
     console.log("callling csvtojson");
     // Do async job
     var array = [];
@@ -165,26 +167,42 @@ function getJSON(filePath, brand, cb) {
   var getExt = filePath.split(".");
   getExt = getExt[getExt.length - 1];
   var that = this;
-  return new Promise(function(resolve, reject) {
+  return new Promise(function (resolve, reject) {
     if (getExt == "csv") {
       var lineReader = require("readline").createInterface({
         input: require("fs").createReadStream(filePath)
       });
       var array = [];
-      lineReader.on("line", function(line) {
+      lineReader.on("line", function (line) {
         array.push(line);
       });
-      lineReader.on("close", function() {
+      lineReader.on("close", function () {
         resolve(array);
       });
     } else if (getExt == "xlsx") {
       // read xlsx file and convert it to json format
-      xlsxtojson(
-        {
+      xlsxtojson({
           input: filePath,
+          output: null,
           sheet: path.basename(filePath).split('.')[0] || 'Sheet 1'
         },
-        function(err, result) {
+        function (err, result) {
+          if (err) {
+            console.error(err);
+            return reject(err);
+          } else {
+            resolve(result);
+          }
+        }
+      );
+    } else
+    if (getExt == 'xls') {
+      xlstojson({
+          input: filePath,
+          output: null,
+          sheet: path.basename(filePath).split('.')[0] || 'Sheet 1'
+        },
+        function (err, result) {
           if (err) {
             console.error(err);
             return reject(err);
@@ -194,13 +212,14 @@ function getJSON(filePath, brand, cb) {
         }
       );
     } else if (getExt == "xml") {
-      console.log("line number 194");
-      fs.readFile(filePath, function(err, data) {
-        parser.parseString(data, function(err, result) {
+      fs.readFile(filePath, function (err, data) {
+        parser.parseString(data, function (err, result) {
           if (err) return reject(err);
           if (brand.xml && brand.xml.parentTag) {
             var parent_tags = brand.xml.parentTag.split(".");
-            return resolve(getter.apply({result:result}, parent_tags));
+            return resolve(getter.apply({
+              result: result
+            }, parent_tags));
           }
         });
       });
@@ -211,26 +230,26 @@ function getJSON(filePath, brand, cb) {
     }
   });
 }
-let moveFile = function(ftpobj, src, dest, cb) {
-  cb = cb || function() {};
+let moveFile = function (ftpobj, src, dest, cb) {
+  cb = cb || function () {};
   var c = new FtpClient();
-  c.on("ready", function() {
-    c.rename(src, dest, function(err) {
+  c.on("ready", function () {
+    c.rename(src, dest, function (err) {
       if (err) cb(err);
       c.end();
       cb();
     });
   });
   c.connect(ftpobj);
-  c.on("error", function(err) {
+  c.on("error", function (err) {
     cb(err);
   });
 };
-let uploadFile = function(ftpobj, localFile, remotePath, cb) {
-  cb = cb || function() {};
+let uploadFile = function (ftpobj, localFile, remotePath, cb) {
+  cb = cb || function () {};
   var c = new FtpClient();
-  c.on("ready", function() {
-    c.put(localFile, remotePath, function(err) {
+  c.on("ready", function () {
+    c.put(localFile, remotePath, function (err) {
       if (err) cb(err);
       c.end();
       cb();
@@ -238,11 +257,11 @@ let uploadFile = function(ftpobj, localFile, remotePath, cb) {
   });
   // connect to localhost:21 as anonymous
   c.connect(ftpobj);
-  c.on("error", function(err) {
+  c.on("error", function (err) {
     cb(err);
   });
 };
-var getUploadType = function(name) {
+var getUploadType = function (name) {
   if (name.indexOf("full") > -1) {
     return "full";
   }
@@ -259,7 +278,7 @@ var createXlsx = (obj, file_name, callback) => {
   var sheet_name = path.basename(createXlsx).split('.')[0] || 'Sheet 1'
   var summary = workbook.addWorksheet(sheet_name);
 
-  headers.map(function(value) {
+  headers.map(function (value) {
     console.log(value);
     headerArr.push({
       header: value,
@@ -293,77 +312,79 @@ var createXlsx = (obj, file_name, callback) => {
       callback();
     });
 };
-var createXML = (obj, file_name, brand_xml,callback) => {
+var createXML = (obj, file_name, brand_xml, callback) => {
   var parentTag = brand_xml.parentTag;
   var parent_tags = parentTag.split('.');
   // get json obj and convert it to xml type
   console.log("In createXML ");
   console.log(obj);
-  
-  obj = obj.map(function(row){
-    var xml_row = {name:parent_tags[1],children:row}
+
+  obj = obj.map(function (row) {
+    var xml_row = {
+      name: parent_tags[1],
+      children: row
+    }
     return xml_row;
   })
   var jsonxmlobj = {
-    [parent_tags[0]]:obj
+    [parent_tags[0]]: obj
   }
-  fs.writeFile(file_name, jsonxml(jsonxmlobj), function(err) {
+  fs.writeFile(file_name, jsonxml(jsonxmlobj), function (err) {
     if (err) console.log(err);
     else {
       callback(true);
     }
   });
 };
+let addBrandFileToQueue = function (brand, file, priority, delay, cb) {
 
-let addBrandFileToQueue = function (brand, file, priority,delay, cb) {
 
-
-  if(delay==undefined || delay==null || delay==''){
-      delay=0;
+  if (delay == undefined || delay == null || delay == '') {
+    delay = 0;
   }
   console.log("----Calling addBrandFileToQueue");
 
   var job = queue
-      .create("catalogbatchqueue", {
-          optId: brand.id,
-          brand,
-          file,
-          title: `Brand: ${brand.id}   File: ${file.name}`
-      })
-      .priority(priority)
-      .delay(delay)
-      .searchKeys(["optId"])
-      .save(function (err) {
-          if (!err) console.log("jobid", job.data.brand.name);
-          if (err) console.log("err", err);
-          });
+    .create("catalogbatchqueue", {
+      optId: brand.id,
+      brand,
+      file,
+      title: `Brand: ${brand.id}   File: ${file.name}`
+    })
+    .priority(priority)
+    .delay(delay)
+    .searchKeys(["optId"])
+    .save(function (err) {
+      if (!err) console.log("jobid", job.data.brand.name);
+      if (err) console.log("err", err);
+    });
 
   job
-     .on("complete", function (id, result) {
-          console.log("uploaderqueue Job completed with data ", result);
-          kue.Job.get(id, function (err, job) {
-              if (err) return;
-              job.remove(function (err) {
-                  if (err) throw err;
-                  console.log("removed completed job #%d", job.id);
-              });
-          });
-      })
-      .on("failed attempt", function (errorMessage, doneAttempts) {
-          console.log("Job failed attempt");
-      })
-      .on("failed", function (errorMessage) {
-          console.log("line number 337");
-          console.log(errorMessage);
-          console.log("Job failed", errorMessage);
-
-      })
-      .on("progress", function (progress, data) {
-          console.log(
-              "\r  job #" + job.id + " " + progress + "% complete with data ",
-              data
-          );
+    .on("complete", function (id, result) {
+      console.log("uploaderqueue Job completed with data ", result);
+      kue.Job.get(id, function (err, job) {
+        if (err) return;
+        job.remove(function (err) {
+          if (err) throw err;
+          console.log("removed completed job #%d", job.id);
+        });
       });
+    })
+    .on("failed attempt", function (errorMessage, doneAttempts) {
+      console.log("Job failed attempt");
+    })
+    .on("failed", function (errorMessage) {
+      console.log("line number 337");
+      console.log(errorMessage);
+      console.log("Job failed", errorMessage);
+
+    })
+    .on("progress", function (progress, data) {
+      console.log(
+        "\r  job #" + job.id + " " + progress + "% complete with data ",
+        data
+      );
+    });
 
 };
 module.exports = {
