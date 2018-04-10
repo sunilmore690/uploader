@@ -8,7 +8,7 @@ let moveFileToErrorDir = function(item) {
 const sendErrorEmail = function(item, err) {
   console.log("Calling sendErrorEmail");
   var emailjob = queue
-    .create("email", { item: item, err: err })
+    .create("email", { item: item, err: err})
     .attempts(2)
     .save(function(err) {
       if (!err) console.log("emailjobid", emailjob.id);
@@ -39,6 +39,7 @@ const sendErrorEmail = function(item, err) {
     });
 };
 module.exports = function() {
+  var brandHash ={};
   queue.process("catalogbatchqueue", 4, function(job, ctx, done) {
     job.log("-----process----");
     let item = job.data;
