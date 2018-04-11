@@ -17,29 +17,9 @@ module.exports = {
     host: "ec2-54-186-176-189.us-west-2.compute.amazonaws.com",
     port: 22,
     username: "ec2-user",
-    privateKeyPath: "/Users/sunilmore/Downloads/sunilaws_private.pem"
+    privateKeyPath: "/path/to/private/pem/file"
   },
   brands: [
-    // {
-    //   optId: "1",
-    //   name: "Brand1",
-    //   priority: "normal",
-    //   ftp: {
-    //     host: "ftp.filezapp.com",
-    //     port: 21,
-    //     user: "mallinath@filezapp.com",
-    //     password: "malli123",
-    //     pass: "malli123"
-    //   },
-    //   dir: {
-    //     upload: "/upload/",
-    //     enqueued: "/enqueued/",
-    //     processing: "/processing/",
-    //     error: "/error/",
-    //     processed: "/processed/",
-    //     ignore:"/ignore/",
-    //   }
-    // },
     {
       optId: "1",
       name: "Brand1",

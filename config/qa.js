@@ -4,19 +4,19 @@ module.exports = {
       endpoint:'http://optqa.optcentral.com'
     },
     redis: {
-      prefix: "uploadrewrite",
+      prefix: "uploadrewrite-qa",
       redis: {
         port: 11000,
         host: "node2064-hw-redis-staging.jelastic.optcentral.com",
         auth: 'YKAcvx61829',
-        db: 3 // if provided select a non-default redis db
+        db: 3 
       }
     },
     ssh:{
       host: "ec2-54-186-176-189.us-west-2.compute.amazonaws.com",
       port: 22,
       username: "ec2-user",
-      privateKeyPath: "/Users/sunilmore/Downloads/sunilaws_private.pem"
+      privateKeyPath: "/path/to/private/pem/file"
       
     },
     shScript:"/home/opt/standalone/runXCD.sh",
