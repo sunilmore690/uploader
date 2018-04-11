@@ -111,7 +111,7 @@ queue.process("brandmanagerqueue", 4,async function(job, ctx, done) {
     async_lib.eachSeries(
       files,
       function(file, cb) {
-        job.log(`Brand : ${brand} File: ${file}`);
+        job.log(`Brand : ${JSON.stringify(brand.name)} File: ${JSON.stringify(file.name)}`);
         
          addBrandFileToQueue(job,brand, file, priority, cb);
       },

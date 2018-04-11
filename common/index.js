@@ -4,6 +4,7 @@ const fs = require("fs"),
   xlstojson = require("xls-to-json-lc"), //excel file
   xml2js = require("xml2js"), // xml file
   jsonxml = require("jsontoxml"),
+  Excel=require('exceljs');
   path = require('path');
 (_ = require("lodash")), (parser = new xml2js.Parser());
 var kue = require("kue"),
@@ -41,14 +42,10 @@ let seamless = async function (item, file, cb) {
 
   try {
     var prevFileData = await getJSON.call(this, prevFilePath, this.item.brand);
-    var currentFileData = await getJSON.call(
-      this,
-      currentRemote,
-      this.item.brand
-    );
+    var currentFileData = await getJSON.call(this,currentRemote,this.item.brand);
     // used or condition because if this is first time then there is no prev file is avaliable
-    console.log("prevfile", typeof prevFileData);
-    console.log("curfile", typeof currentFileData);
+    // console.log("prevfile",prevFileData);
+    // console.log("curfile",currentFileData);
 
     if (getPrevFileExt == "csv" || getCurrentFileExt == "csv") {
       var diffItems = [];
@@ -88,7 +85,7 @@ let seamless = async function (item, file, cb) {
       }); // each complete
 
       if (diffItems.length) {
-        createXlsx(modifiedStream, that.modifiedRemote, (err) => {
+        createXlsx(diffItems, that.modifiedRemote, (err) => {
           if (err) {
             that.job.log(err)
             return cb(false)
@@ -184,7 +181,7 @@ function getJSON(filePath, brand, cb) {
       xlsxtojson({
           input: filePath,
           output: null,
-          sheet: path.basename(filePath).split('.')[0] || 'Sheet 1'
+          sheet:  'Sheet 1'
         },
         function (err, result) {
           if (err) {
@@ -197,16 +194,20 @@ function getJSON(filePath, brand, cb) {
       );
     } else
     if (getExt == 'xls') {
+      console.log("in xls ");
+      console.log(filePath);
       xlstojson({
           input: filePath,
-          output: null,
-          sheet: path.basename(filePath).split('.')[0] || 'Sheet 1'
+          output: null
         },
         function (err, result) {
           if (err) {
+            console.log("208")
             console.error(err);
             return reject(err);
           } else {
+            console.log("212")
+            console.log(result);
             resolve(result);
           }
         }
@@ -268,19 +269,19 @@ var getUploadType = function (name) {
   return "partial";
 };
 var createXlsx = (obj, file_name, callback) => {
-  console.log("In create excel");
+  console.log("In create ");
+  console.log(obj[0])
   var headers = Object.keys(obj[0]);
   var workbook = new Excel.Workbook();
 
   var headerArr = [];
   var headerBold = [];
   var char = 65; // for ascii value of A
-  var sheet_name = path.basename(createXlsx).split('.')[0] || 'Sheet 1'
+  var sheet_name =  'Sheet 1'
   var summary = workbook.addWorksheet(sheet_name);
 
   headers.map(function (value) {
-    console.log(value);
-    headerArr.push({
+      headerArr.push({
       header: value,
       key: value
     });

@@ -12,7 +12,7 @@ module.exports = {
       db: 3 // if provided select a non-default redis db
     }
   },
-  shScript: "/Users/sunilmore/Documents/projects/uploader/runnode.sh",
+  shScript: "/Users/ashwini/Documents/projects/uploader/runnode.sh",
   ssh: {
     host: "ec2-54-186-176-189.us-west-2.compute.amazonaws.com",
     port: 22,
@@ -40,6 +40,30 @@ module.exports = {
     //     ignore:"/ignore/",
     //   }
     // },
+    {
+      optId: "1",
+      name: "Brand1",
+      priority: "normal",
+      xml: {
+        parentTag: "stockFile.stockItem"
+      },
+      ftp: {
+        host: "ftp.filezapp.com",
+        port: 21,
+        user: "sunil@filezapp.com",
+        password: "Laxman_usha90",
+        pass: "Laxman_usha90"
+      },
+      dir: {
+        upload: "/uploadrewrite/1/upload/",
+        enqueued: "/uploadrewrite/1/enqueued/",
+        processing: "/uploadrewrite/1/processing/",
+        error: "/uploadrewrite/1/error/",
+        processed: "/uploadrewrite/1/processed/",
+        ignore: "/uploadrewrite/1/ignore/",
+        backup:"/uploadrewrite/1/backup/"
+      }
+    },
     {
       optId: "2",
       name: "Brand2",

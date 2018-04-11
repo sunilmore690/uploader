@@ -194,7 +194,7 @@ class Uploader extends events {
       .on("ready", function() {
         console.log("Client :: ready");
         conn.exec(
-          `sh /Users/sunilmore/Documents/projects/uploader/runnode.sh 10 ${
+          `sh /Users/ashwini/Documents/projects/uploader/runnode.sh 10 ${
             that.item.file.name
           }`,
           function(err, stream) {

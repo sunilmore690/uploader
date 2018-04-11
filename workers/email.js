@@ -4,12 +4,13 @@ const config = require("config");
 module.exports = function () {
   queue.process("email", 2, async function (job, ctx, done) {
     job.log("Sending Email");
-
+    
     let data = job.data;
-    const brand = data.brand;
-    const file = data.file;
+    
+    const brand = data.item.brand;
+    const file = data.item.file;
     const err = typeof data.err == 'object' ? JSON.stringify(data.err) : data.err;
-    const comp_id = data.brand.optId;
+    const comp_id = brand.optId;
 
     let url = config.opt.endpoint + "/email";
 

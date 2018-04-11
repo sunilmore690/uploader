@@ -1,5 +1,6 @@
 let Uploader = require("./uploader"),
   queue = require("../initializers/queue"),
+  kue = require("kue"),
   common = require("../common/index");
 let moveFileToErrorDir = function(item) {
   console.log("----Moving file from processing to error ---", item.file);
@@ -47,6 +48,8 @@ module.exports = function() {
       brandHash[job.data.optId] = 1;
       let uploader = new Uploader(item, job);
       uploader.on("error", function(err) {
+        console.log("++++error++++++");
+        console.log(err);
         moveFileToErrorDir(uploader.item);
         sendErrorEmail(uploader.item, err);
         done(err);
