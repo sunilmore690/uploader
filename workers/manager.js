@@ -112,8 +112,8 @@ queue.process("brandmanagerqueue", 4,async function(job, ctx, done) {
       files,
       function(file, cb) {
         job.log(`Brand : ${brand} File: ${file}`);
-        common.addBrandFileToQueue(brand, file, priority,null,cb);
-        // addBrandFileToQueue(job,brand, file, priority, cb);
+        
+         addBrandFileToQueue(job,brand, file, priority, cb);
       },
       function() {
         job.log("---All files added to queue -----");
@@ -126,7 +126,45 @@ queue.process("brandmanagerqueue", 4,async function(job, ctx, done) {
     done(e);
   }
 });
+let addBrandFileToQueue = function(job,brand, file, priority, cb) {
+  cb = cb || function() {};
+  var that = this;
+  job.log("----Calling addBrandFileToQueue");
+  async_lib.series(
+    {
+      moveFileToEnqueued: function(callback) {
+        job.log('--Moving file to enqueued')
+        let ftp = new FtpClient();
+        ftp.connect(brand.ftp);
 
+        job.log(
+          "move file from " +
+            brand.dir.upload +
+            file.name +
+            " to " +
+            brand.dir.enqueued +
+            file.name
+        );
+        ftp.rename(
+          brand.dir.upload + file.name,
+          brand.dir.enqueued + file.name,
+          function(err) {
+            if(err) job.log( err);        
+            callback();
+            ftp.end();
+          }
+        );
+      },
+      addtoqueue: function(callback) {
+        job.log('--Adding File to queue',file.name)
+        common.addBrandFileToQueue(brand, file, priority,null,callback);
+      }
+    },
+    function(err) {
+      cb()
+    }
+  );
+};
 let getFiles = function(brand) {
   // Return new promise
   return new Promise(function(resolve, reject) {
